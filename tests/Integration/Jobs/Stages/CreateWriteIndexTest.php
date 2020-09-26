@@ -8,7 +8,6 @@ use App\Product;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
-use Matchish\ScoutElasticSearch\ElasticSearch\Index;
 use Matchish\ScoutElasticSearch\Jobs\Stages\CreateWriteIndex;
 use Matchish\ScoutElasticSearch\Searchable\DefaultImportSourceFactory;
 use Tests\IntegrationTestCase;
@@ -23,7 +22,8 @@ final class CreateWriteIndexTest extends IntegrationTestCase
     {
         /** @var Client $elasticsearch */
         $elasticsearch = $this->app->make(Client::class);
-        $stage = new CreateWriteIndex(DefaultImportSourceFactory::from(Product::class), Index::fromSource(DefaultImportSourceFactory::from(Product::class)));
+        $source = DefaultImportSourceFactory::from(Product::class);
+        $stage = new CreateWriteIndex($source, $source->defineIndex());
         $stage->handle($elasticsearch);
         $response = $elasticsearch->indices()->getAlias(['index' => '*', 'name' => 'products'])->asArray();
         $this->assertTrue($this->containsWriteIndex($response));

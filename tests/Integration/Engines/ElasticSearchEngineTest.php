@@ -69,7 +69,7 @@ final class ElasticSearchEngineTest extends IntegrationTestCase
 
             return $model;
         });
-        $index = Index::fromSource(DefaultImportSourceFactory::from(Product::class));
+        $index = DefaultImportSourceFactory::from(Product::class)->defineIndex();
         $params = new Create(
             'products',
             $index->config()
