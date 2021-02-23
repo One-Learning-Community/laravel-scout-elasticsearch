@@ -6,27 +6,29 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Cache;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 
-class PageScope implements Scope
+class AfterIdChunkScope implements Scope
 {
-    /**
-     * @var int
-     */
-    private $page;
     /**
      * @var int
      */
     private $perPage;
 
     /**
-     * PageScope constructor.
-     * @param int $page
-     * @param int $perPage
+     * @var ImportContext
      */
-    public function __construct(int $page, int $perPage)
+    private $context;
+
+    /**
+     * PageScope constructor.
+     * @param int $perPage
+     * @param ImportContext $context
+     */
+    public function __construct($perPage, ImportContext $context)
     {
-        $this->page = $page;
         $this->perPage = $perPage;
+        $this->context = $context;
     }
 
     /**
@@ -38,6 +40,6 @@ class PageScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->forPage($this->page, $this->perPage);
+        $builder->forPageAfterId($this->perPage, $this->context->lastImportId, $model->getKeyName());
     }
 }

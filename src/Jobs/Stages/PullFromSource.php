@@ -2,8 +2,10 @@
 
 namespace Matchish\ScoutElasticSearch\Jobs\Stages;
 
+use Elasticsearch\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
 /**
@@ -24,14 +26,13 @@ final class PullFromSource
         $this->source = $source;
     }
 
-    public function handle(): void
+    public function handle(Client $elasticsearch, ImportContext $context): void
     {
         $results = $this->source->get()->filter->shouldBeSearchable();
         if (! $results->isEmpty()) {
-            // Cache last id
-            Cache::put('scout_import_last_id', $results->last()->getKey());
-
             $results->first()->searchableUsing()->update($results);
+            // Cache last id
+            $context->lastImportId = $results->last()->getKey();
         }
     }
 
@@ -47,11 +48,12 @@ final class PullFromSource
 
     /**
      * @param ImportSource $source
+     * @param ImportContext $context
      * @return Collection
      */
-    public static function chunked(ImportSource $source): Collection
+    public static function chunked(ImportSource $source, ImportContext $context): Collection
     {
-        return $source->chunked()->map(function ($chunk) {
+        return $source->chunked($context)->map(function ($chunk) {
             return new static($chunk);
         });
     }
