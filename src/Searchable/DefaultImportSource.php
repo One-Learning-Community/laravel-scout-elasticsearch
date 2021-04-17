@@ -32,11 +32,6 @@ class DefaultImportSource implements ImportSource
     private $chunkMode;
 
     /**
-     * @var mixed
-     */
-    private $lastImportId;
-
-    /**
      * DefaultImportSource constructor.
      * @param string $className
      * @param array $scopes

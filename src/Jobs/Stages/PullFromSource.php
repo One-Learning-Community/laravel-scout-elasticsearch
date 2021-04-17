@@ -28,11 +28,16 @@ final class PullFromSource
 
     public function handle(Client $elasticsearch, ImportContext $context): void
     {
-        $results = $this->source->get()->filter->shouldBeSearchable();
-        if (! $results->isEmpty()) {
-            $results->first()->searchableUsing()->update($results);
+        $results = $this->source->get();
+
+        if (!$results->isEmpty()) {
             // Cache last id
             $context->lastImportId = $results->last()->getKey();
+        }
+
+        $filteredResults = $results->filter->shouldBeSearchable();
+        if (! $filteredResults->isEmpty()) {
+            $filteredResults->first()->searchableUsing()->update($results);
         }
     }
 
