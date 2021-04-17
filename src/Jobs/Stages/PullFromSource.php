@@ -36,7 +36,7 @@ final class PullFromSource implements StageInterface
 
         $filteredResults = $results->filter->shouldBeSearchable();
         if (!$filteredResults->isEmpty()) {
-            $filteredResults->first()->searchableUsing()->update($results);
+            $filteredResults->first()->searchableUsing()->update($filteredResults);
         }
     }
 
