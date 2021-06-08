@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'chunk_mode' => 'after_id',
     'host' => env('ELASTICSEARCH_HOST'),
     'indices' => [
         'mappings' => [

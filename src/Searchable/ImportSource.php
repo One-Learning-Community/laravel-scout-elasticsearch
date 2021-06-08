@@ -4,6 +4,8 @@ namespace Matchish\ScoutElasticSearch\Searchable;
 
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Matchish\ScoutElasticSearch\ElasticSearch\Index;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 
 interface ImportSource
 {
@@ -13,7 +15,11 @@ interface ImportSource
 
     public function searchableAs(): string;
 
-    public function chunked(): Collection;
+    public function chunked(ImportContext $context): Collection;
+
+    public function getChunkSize(): int;
 
     public function get(): EloquentCollection;
+
+    public function defineIndex(): Index;
 }
