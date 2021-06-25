@@ -4,6 +4,7 @@ namespace Matchish\ScoutElasticSearch\Engines;
 
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Builder as BaseBuilder;
 use Laravel\Scout\Engines\Engine;
@@ -128,7 +129,15 @@ final class ElasticSearchEngine extends Engine
      */
     public function lazyMap(Builder $builder, $results, $model)
     {
-        throw new \Error('Not implemented');
+        $hits = app()->makeWith(
+            HitsIteratorAggregate::class,
+            [
+                'results'  => $results,
+                'callback' => $builder->queryCallback,
+            ]
+        );
+
+        return new LazyCollection($hits);
     }
 
     /**
