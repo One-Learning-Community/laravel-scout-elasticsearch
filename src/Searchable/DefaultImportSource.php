@@ -5,12 +5,17 @@ namespace Matchish\ScoutElasticSearch\Searchable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Matchish\ScoutElasticSearch\Database\Scopes\AfterIdChunkScope;
 use Matchish\ScoutElasticSearch\Database\Scopes\PageScope;
 use Matchish\ScoutElasticSearch\ElasticSearch\Index;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 
 class DefaultImportSource implements ImportSource
 {
     const DEFAULT_CHUNK_SIZE = 500;
+
+    const CHUNK_MODE_PAGE = 'page';
+    const CHUNK_MODE_AFTER_ID = 'after_id';
 
     /**
      * @var string
@@ -22,15 +27,21 @@ class DefaultImportSource implements ImportSource
     private $scopes;
 
     /**
-     * DefaultImportSource constructor.
-     *
-     * @param  string  $className
-     * @param  array  $scopes
+     * @var string
      */
-    public function __construct(string $className, array $scopes = [])
+    private $chunkMode;
+
+    /**
+     * DefaultImportSource constructor.
+     * @param string $className
+     * @param array $scopes
+     * @param string|null $chunkMode
+     */
+    public function __construct(string $className, array $scopes = [], string $chunkMode = null)
     {
         $this->className = $className;
         $this->scopes = $scopes;
+        $this->chunkMode = $chunkMode ?: config('elasticsearch.chunk_mode', self::CHUNK_MODE_AFTER_ID);
     }
 
     public function syncWithSearchUsingQueue(): ?string
@@ -48,7 +59,7 @@ class DefaultImportSource implements ImportSource
         return $this->model()->searchableAs();
     }
 
-    public function chunked(): Collection
+    public function chunked(ImportContext $context): Collection
     {
         $query = $this->newQuery();
         $totalSearchables = $query->toBase()->getCountForPagination();
@@ -56,8 +67,12 @@ class DefaultImportSource implements ImportSource
             $chunkSize = $this->getChunkSize();
             $totalChunks = (int) ceil($totalSearchables / $chunkSize);
 
-            return collect(range(1, $totalChunks))->map(function ($page) use ($chunkSize) {
-                $chunkScope = new PageScope($page, $chunkSize);
+            return collect(range(1, $totalChunks))->map(function ($page) use ($chunkSize, $context) {
+                if ($this->chunkMode === self::CHUNK_MODE_AFTER_ID) {
+                    $chunkScope = new AfterIdChunkScope($chunkSize, $context);
+                } else {
+                    $chunkScope = new PageScope($page, $chunkSize);
+                }
 
                 return new static($this->className, array_merge($this->scopes, [$chunkScope]));
             });

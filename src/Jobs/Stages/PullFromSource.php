@@ -4,6 +4,7 @@ namespace Matchish\ScoutElasticSearch\Jobs\Stages;
 
 use Elastic\Elasticsearch\Client;
 use Illuminate\Support\Collection;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
 /**
@@ -17,18 +18,25 @@ final class PullFromSource implements StageInterface
     private $source;
 
     /**
-     * @param  ImportSource  $source
+     * @param ImportSource $source
      */
     public function __construct(ImportSource $source)
     {
         $this->source = $source;
     }
 
-    public function handle(?Client $elasticsearch = null): void
+    public function handle(?Client $elasticsearch = null, ImportContext $context): void
     {
-        $results = $this->source->get()->filter->shouldBeSearchable();
-        if (! $results->isEmpty()) {
-            $results->first()->searchableUsing()->update($results);
+        $results = $this->source->get();
+
+        if (!$results->isEmpty()) {
+            // Cache last id
+            $context->lastImportId = $results->last()->getKey();
+        }
+
+        $filteredResults = $results->filter->shouldBeSearchable();
+        if (!$filteredResults->isEmpty()) {
+            $filteredResults->first()->searchableUsing()->update($results);
         }
     }
 
@@ -43,12 +51,13 @@ final class PullFromSource implements StageInterface
     }
 
     /**
-     * @param  ImportSource  $source
+     * @param ImportSource $source
+     * @param ImportContext $context
      * @return Collection
      */
-    public static function chunked(ImportSource $source): Collection
+    public static function chunked(ImportSource $source, ImportContext $context): Collection
     {
-        return $source->chunked()->map(function ($chunk) {
+        return $source->chunked($context)->map(function ($chunk) {
             return new static($chunk);
         });
     }
