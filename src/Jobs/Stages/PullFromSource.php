@@ -12,7 +12,7 @@ class PullFromSource implements StageInterface
     /**
      * @var ImportSource
      */
-    private $source;
+    protected $source;
 
     /**
      * @param ImportSource $source

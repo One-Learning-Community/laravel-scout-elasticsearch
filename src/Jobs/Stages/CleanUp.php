@@ -6,6 +6,7 @@ use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Get as GetAliasParams;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Delete as DeleteIndexParams;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
 class CleanUp implements StageInterface
@@ -13,7 +14,7 @@ class CleanUp implements StageInterface
     /**
      * @var ImportSource
      */
-    private $source;
+    protected $source;
 
     /**
      * @param ImportSource $source
@@ -23,7 +24,7 @@ class CleanUp implements StageInterface
         $this->source = $source;
     }
 
-    public function handle(Client $elasticsearch): void
+    public function handle(Client $elasticsearch, ImportContext $context): void
     {
         $source = $this->source;
         $params = GetAliasParams::anyIndex($source->searchableAs());

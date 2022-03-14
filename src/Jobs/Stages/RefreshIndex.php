@@ -12,7 +12,7 @@ class RefreshIndex implements StageInterface
     /**
      * @var Index
      */
-    private $index;
+    protected $index;
 
     /**
      * RefreshIndex constructor.

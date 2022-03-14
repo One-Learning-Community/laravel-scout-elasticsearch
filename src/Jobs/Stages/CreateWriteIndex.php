@@ -16,11 +16,11 @@ class CreateWriteIndex implements StageInterface
     /**
      * @var ImportSource
      */
-    private $source;
+    protected $source;
     /**
      * @var Index
      */
-    private $index;
+    protected $index;
 
     /**
      * @param ImportSource $source
