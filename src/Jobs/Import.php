@@ -34,18 +34,19 @@ final class Import
      */
     public function handle(Client $elasticsearch): void
     {
-        $stages = $this->stages();
+        $importContext = new ImportContext();
+        $stages = $this->stages($importContext);
         $estimate = $stages->sum->estimate();
         $this->progressBar()->setMaxSteps($estimate);
-        $stages->each(function ($stage) use ($elasticsearch) {
+        $stages->each(function ($stage) use ($elasticsearch, $importContext) {
             $this->progressBar()->setMessage($stage->title());
-            $stage->handle($elasticsearch);
+            $stage->handle($elasticsearch, $importContext);
             $this->progressBar()->advance($stage->estimate());
         });
     }
 
-    private function stages(): Collection
+    private function stages(ImportContext $importContext): Collection
     {
-        return ImportStages::fromSource($this->source);
+        return ImportStages::fromSource($this->source, $importContext);
     }
 }

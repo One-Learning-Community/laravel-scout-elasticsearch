@@ -5,6 +5,7 @@ namespace Matchish\ScoutElasticSearch\Database\Scopes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Support\Facades\Cache;
 
 class PageScope implements Scope
 {
