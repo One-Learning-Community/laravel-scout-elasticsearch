@@ -9,10 +9,7 @@ use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Create;
 use Matchish\ScoutElasticSearch\ElasticSearch\WriteAlias;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class CreateWriteIndex
+class CreateWriteIndex
 {
     /**
      * @var ImportSource

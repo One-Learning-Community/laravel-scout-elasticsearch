@@ -8,10 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class PullFromSource
+class PullFromSource
 {
     /**
      * @var ImportSource

@@ -8,10 +8,7 @@ use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Get;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Update;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class SwitchToNewAndRemoveOldIndex
+class SwitchToNewAndRemoveOldIndex
 {
     /**
      * @var ImportSource

@@ -6,10 +6,7 @@ use Elasticsearch\Client;
 use Matchish\ScoutElasticSearch\ElasticSearch\Index;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Refresh;
 
-/**
- * @internal
- */
-final class RefreshIndex
+class RefreshIndex
 {
     /**
      * @var Index
