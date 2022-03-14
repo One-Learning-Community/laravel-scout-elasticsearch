@@ -8,10 +8,7 @@ use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Get as GetAli
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Delete as DeleteIndexParams;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class CleanUp
+class CleanUp
 {
     /**
      * @var ImportSource
