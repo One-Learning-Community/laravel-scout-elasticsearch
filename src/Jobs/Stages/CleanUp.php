@@ -13,7 +13,7 @@ class CleanUp
     /**
      * @var ImportSource
      */
-    private $source;
+    protected $source;
 
     /**
      * @param  ImportSource  $source

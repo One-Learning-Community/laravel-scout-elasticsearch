@@ -13,7 +13,7 @@ class PullFromSource
     /**
      * @var ImportSource
      */
-    private $source;
+    protected $source;
 
     /**
      * @param  ImportSource  $source
