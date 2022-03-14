@@ -11,7 +11,7 @@ class RefreshIndex
     /**
      * @var Index
      */
-    private $index;
+    protected $index;
 
     /**
      * RefreshIndex constructor.
