@@ -8,12 +8,10 @@ use Matchish\ScoutElasticSearch\ElasticSearch\FilteredAlias;
 use Matchish\ScoutElasticSearch\ElasticSearch\Index;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Create;
 use Matchish\ScoutElasticSearch\ElasticSearch\WriteAlias;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class CreateWriteIndex implements StageInterface
+class CreateWriteIndex implements StageInterface
 {
     /**
      * @var ImportSource
@@ -25,8 +23,8 @@ final class CreateWriteIndex implements StageInterface
     private $index;
 
     /**
-     * @param  ImportSource  $source
-     * @param  Index  $index
+     * @param ImportSource $source
+     * @param Index $index
      */
     public function __construct(ImportSource $source, Index $index)
     {
@@ -34,7 +32,7 @@ final class CreateWriteIndex implements StageInterface
         $this->index = $index;
     }
 
-    public function handle(Client $elasticsearch): void
+    public function handle(Client $elasticsearch, ImportContext $context): void
     {
         $source = $this->source;
         $this->index->addAlias(

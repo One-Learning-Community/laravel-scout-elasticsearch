@@ -8,10 +8,7 @@ use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Get as GetAli
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Delete as DeleteIndexParams;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class CleanUp implements StageInterface
+class CleanUp implements StageInterface
 {
     /**
      * @var ImportSource
@@ -19,7 +16,7 @@ final class CleanUp implements StageInterface
     private $source;
 
     /**
-     * @param  ImportSource  $source
+     * @param ImportSource $source
      */
     public function __construct(ImportSource $source)
     {
@@ -38,7 +35,7 @@ final class CleanUp implements StageInterface
         foreach ($response as $indexName => $data) {
             foreach ($data['aliases'] as $alias => $config) {
                 if (array_key_exists('is_write_index', $config) && $config['is_write_index']) {
-                    $params = new DeleteIndexParams((string) $indexName);
+                    $params = new DeleteIndexParams((string)$indexName);
                     $elasticsearch->indices()->delete($params->toArray());
                     continue 2;
                 }

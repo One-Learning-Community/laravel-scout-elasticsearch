@@ -7,10 +7,7 @@ use Illuminate\Support\Collection;
 use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class PullFromSource implements StageInterface
+class PullFromSource implements StageInterface
 {
     /**
      * @var ImportSource

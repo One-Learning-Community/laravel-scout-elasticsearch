@@ -3,6 +3,7 @@
 namespace Matchish\ScoutElasticSearch\Jobs\Stages;
 
 use Elastic\Elasticsearch\Client;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 
 interface StageInterface
 {
@@ -10,5 +11,5 @@ interface StageInterface
 
     public function estimate(): int;
 
-    public function handle(Client $elasticsearch): void;
+    public function handle(Client $elasticsearch, ImportContext $context): void;
 }

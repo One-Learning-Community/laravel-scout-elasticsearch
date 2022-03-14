@@ -6,12 +6,10 @@ use Elastic\Elasticsearch\Client;
 use Matchish\ScoutElasticSearch\ElasticSearch\Index;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Get;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Alias\Update;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 
-/**
- * @internal
- */
-final class SwitchToNewAndRemoveOldIndex implements StageInterface
+class SwitchToNewAndRemoveOldIndex implements StageInterface  // internal final class SwitchToNewAndRemoveOldIndex implements StageInterface
 {
     /**
      * @var ImportSource
@@ -23,8 +21,8 @@ final class SwitchToNewAndRemoveOldIndex implements StageInterface
     private $index;
 
     /**
-     * @param  ImportSource  $source
-     * @param  Index  $index
+     * @param ImportSource $source
+     * @param Index $index
      */
     public function __construct(ImportSource $source, Index $index)
     {
@@ -32,7 +30,7 @@ final class SwitchToNewAndRemoveOldIndex implements StageInterface
         $this->index = $index;
     }
 
-    public function handle(Client $elasticsearch): void
+    public function handle(Client $elasticsearch, ImportContext $context): void
     {
         $source = $this->source;
         $params = Get::anyIndex($source->searchableAs());
@@ -41,9 +39,9 @@ final class SwitchToNewAndRemoveOldIndex implements StageInterface
         $params = new Update();
         foreach ($response as $indexName => $alias) {
             if ($indexName != $this->index->name()) {
-                $params->removeIndex((string) $indexName);
+                $params->removeIndex((string)$indexName);
             } else {
-                $params->add((string) $indexName, $source->searchableAs());
+                $params->add((string)$indexName, $source->searchableAs());
             }
         }
         $elasticsearch->indices()->updateAliases($params->toArray());

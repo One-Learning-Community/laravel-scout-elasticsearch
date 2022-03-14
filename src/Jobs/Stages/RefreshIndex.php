@@ -5,11 +5,9 @@ namespace Matchish\ScoutElasticSearch\Jobs\Stages;
 use Elastic\Elasticsearch\Client;
 use Matchish\ScoutElasticSearch\ElasticSearch\Index;
 use Matchish\ScoutElasticSearch\ElasticSearch\Params\Indices\Refresh;
+use Matchish\ScoutElasticSearch\Jobs\ImportContext;
 
-/**
- * @internal
- */
-final class RefreshIndex implements StageInterface
+class RefreshIndex implements StageInterface
 {
     /**
      * @var Index
@@ -19,14 +17,14 @@ final class RefreshIndex implements StageInterface
     /**
      * RefreshIndex constructor.
      *
-     * @param  Index  $index
+     * @param Index $index
      */
     public function __construct(Index $index)
     {
         $this->index = $index;
     }
 
-    public function handle(Client $elasticsearch): void
+    public function handle(Client $elasticsearch, ImportContext $context): void
     {
         $params = new Refresh($this->index->name());
         $elasticsearch->indices()->refresh($params->toArray());
