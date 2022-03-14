@@ -49,6 +49,6 @@ final class Import
 
     private function stages(ImportContext $importContext): Collection
     {
-        return ImportStages::fromSource($this->source, $importContext);
+        return $this->source->defineStages($importContext);
     }
 }
