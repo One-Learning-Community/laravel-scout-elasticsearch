@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'chunk_mode' => 'after_id',
     'host' => env('ELASTICSEARCH_HOST'),
     'user' => env('ELASTICSEARCH_USER'),
     'password' => env('ELASTICSEARCH_PASSWORD'),
