@@ -22,4 +22,6 @@ interface ImportSource
     public function get(): EloquentCollection;
 
     public function defineIndex(): Index;
+
+    public function defineStages(ImportContext $context): Collection;
 }

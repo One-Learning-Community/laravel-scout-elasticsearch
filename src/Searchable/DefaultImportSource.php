@@ -9,6 +9,7 @@ use Matchish\ScoutElasticSearch\Database\Scopes\AfterIdChunkScope;
 use Matchish\ScoutElasticSearch\Database\Scopes\PageScope;
 use Matchish\ScoutElasticSearch\ElasticSearch\Index;
 use Matchish\ScoutElasticSearch\Jobs\ImportContext;
+use Matchish\ScoutElasticSearch\Jobs\ImportStages;
 
 class DefaultImportSource implements ImportSource
 {
@@ -133,5 +134,10 @@ class DefaultImportSource implements ImportSource
         $models = $this->newQuery()->get();
 
         return $models;
+    }
+
+    public function defineStages(ImportContext $context): Collection
+    {
+        return ImportStages::fromSource($this, $context);
     }
 }
