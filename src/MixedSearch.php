@@ -15,7 +15,7 @@ final class MixedSearch
      * @param  \Closure  $callback
      * @return \Laravel\Scout\Builder
      */
-    public static function search($query = '', $callback = null)
+    public static function search(string $query = '', $callback = null): Builder
     {
         return new Builder(new class extends Model
         {

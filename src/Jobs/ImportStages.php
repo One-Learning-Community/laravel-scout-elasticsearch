@@ -13,8 +13,8 @@ use Matchish\ScoutElasticSearch\Searchable\ImportSource;
 class ImportStages extends Collection
 {
     /**
-     * @param ImportSource $source
-     * @param ImportContext $context
+     * @param  ImportSource $source
+     * @param  ImportContext $context
      * @return Collection
      */
     public static function fromSource(ImportSource $source, ImportContext $context)

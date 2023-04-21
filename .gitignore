@@ -2,6 +2,5 @@
 .phpintel
 composer.lock
 .env
-/vendor/
-.history
 .phpunit.result.cache
+/vendor/

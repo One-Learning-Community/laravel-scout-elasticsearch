@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Matchish\ScoutElasticSearch;
 
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
 use Laravel\Scout\ScoutServiceProvider;
@@ -23,8 +23,8 @@ final class ScoutElasticSearchServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'scout');
 
-        resolve(EngineManager::class)->extend(ElasticSearchEngine::class, function () {
-            $elasticsearch = resolve(Client::class);
+        $this->app->make(EngineManager::class)->extend(ElasticSearchEngine::class, function () {
+            $elasticsearch = app(Client::class);
 
             return new ElasticSearchEngine($elasticsearch);
         });

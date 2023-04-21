@@ -19,7 +19,7 @@ final class PullFromSource
     private $source;
 
     /**
-     * @param ImportSource $source
+     * @param  ImportSource  $source
      */
     public function __construct(ImportSource $source)
     {
@@ -52,8 +52,8 @@ final class PullFromSource
     }
 
     /**
-     * @param ImportSource $source
-     * @param ImportContext $context
+     * @param  ImportSource $source
+     * @param  ImportContext $context
      * @return Collection
      */
     public static function chunked(ImportSource $source, ImportContext $context): Collection

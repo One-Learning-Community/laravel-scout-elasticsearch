@@ -33,9 +33,9 @@ class DefaultImportSource implements ImportSource
 
     /**
      * DefaultImportSource constructor.
-     * @param string $className
-     * @param array $scopes
-     * @param string|null $chunkMode
+     * @param  string $className
+     * @param  array $scopes
+     * @param  string|null $chunkMode
      */
     public function __construct(string $className, array $scopes = [], string $chunkMode = null)
     {
@@ -117,7 +117,7 @@ class DefaultImportSource implements ImportSource
             ->when($softDelete, function ($query) {
                 return $query->withTrashed();
             })
-            ->orderBy($this->model()->getKeyName());
+            ->orderBy($this->model()->getQualifiedKeyName());
         $scopes = $this->scopes;
 
         return collect($scopes)->reduce(function ($instance, $scope) {

@@ -2,7 +2,8 @@
 
 namespace Matchish\ScoutElasticSearch\Engines;
 
-use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
+use Elastic\Elasticsearch\Client;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
@@ -22,17 +23,17 @@ final class ElasticSearchEngine extends Engine
     /**
      * The ElasticSearch client.
      *
-     * @var \Elasticsearch\Client
+     * @var Client
      */
     protected $elasticsearch;
 
     /**
      * Create a new engine instance.
      *
-     * @param \Elasticsearch\Client $elasticsearch
+     * @param  Client  $elasticsearch
      * @return void
      */
-    public function __construct(\Elasticsearch\Client $elasticsearch)
+    public function __construct(Client $elasticsearch)
     {
         $this->elasticsearch = $elasticsearch;
     }
@@ -44,9 +45,9 @@ final class ElasticSearchEngine extends Engine
     {
         $params = new Bulk();
         $params->index($models);
-        $response = $this->elasticsearch->bulk($params->toArray());
+        $response = $this->elasticsearch->bulk($params->toArray())->asArray();
         if (array_key_exists('errors', $response) && $response['errors']) {
-            $error = new ServerErrorResponseException(json_encode($response, JSON_PRETTY_PRINT));
+            $error = new ServerResponseException(json_encode($response, JSON_PRETTY_PRINT));
             throw new \Exception('Bulk update error', $error->getCode(), $error);
         }
     }
@@ -67,7 +68,7 @@ final class ElasticSearchEngine extends Engine
     public function flush($model)
     {
         $indexName = $model->searchableAs();
-        $exist = $this->elasticsearch->indices()->exists(['index' => $indexName]);
+        $exist = $this->elasticsearch->indices()->exists(['index' => $indexName])->asBool();
         if ($exist) {
             $body = (new Search())->addQuery(new MatchAllQuery())->toArray();
             $params = new SearchParams($indexName, $body);
@@ -129,15 +130,24 @@ final class ElasticSearchEngine extends Engine
      */
     public function lazyMap(Builder $builder, $results, $model)
     {
-        $hits = app()->makeWith(
-            HitsIteratorAggregate::class,
-            [
-                'results'  => $results,
-                'callback' => $builder->queryCallback,
-            ]
-        );
+        if ((new \ReflectionClass($model))->isAnonymous()) {
+            throw new \Error('Not implemented for MixedSearch');
+        }
 
-        return new LazyCollection($hits);
+        if (count($results['hits']['hits']) === 0) {
+            return LazyCollection::make($model->newCollection());
+        }
+
+        $objectIds = collect($results['hits']['hits'])->pluck('_id')->values()->all();
+        $objectIdPositions = array_flip($objectIds);
+
+        return $model->queryScoutModelsByIds(
+            $builder, $objectIds
+        )->cursor()->filter(function ($model) use ($objectIds) {
+            return in_array($model->getScoutKey(), $objectIds);
+        })->sortBy(function ($model) use ($objectIdPositions) {
+            return $objectIdPositions[$model->getScoutKey()];
+        })->values();
     }
 
     /**
@@ -172,8 +182,8 @@ final class ElasticSearchEngine extends Engine
     }
 
     /**
-     * @param BaseBuilder $builder
-     * @param array $options
+     * @param  BaseBuilder  $builder
+     * @param  array  $options
      * @return SearchResults|mixed
      */
     private function performSearch(BaseBuilder $builder, $options = [])
@@ -194,6 +204,6 @@ final class ElasticSearchEngine extends Engine
         $indexName = $builder->index ?: $model->searchableAs();
         $params = new SearchParams($indexName, $searchBody->toArray());
 
-        return $this->elasticsearch->search($params->toArray());
+        return $this->elasticsearch->search($params->toArray())->asArray();
     }
 }

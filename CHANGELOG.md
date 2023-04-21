@@ -6,10 +6,54 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+## [7.0.0] - 2023-02-01
+### Changed
+- No duplicates in search on reindex anymore. updates/inserts will be visible only after reindex. For most projects should be ok but for some could be breaking changes
+
+## [6.0.2] - 2022-06-16
+### Added
+- Elasticsearch basic authentication support
+- Elasticsearch CloudId and Api Key credential support
+
+## [6.0.1] - 2022-06-09
+### Added
+- LazyMap implemented for ElasticsearchEngine
+
+## [6.0.0] - 2022-04-30
+### Added
+- Elasticsearch 8 Support
+
+## [5.0.2] - 2022-03-24
+### Added
+-  multiple ElasticSearch nodes support
+
+## [5.0.1] - 2021-07-23
+### Added
+- whereIn filter support
+
 ## [5.0.0] - 2021-05-13
 ### Added
 -  PHP 8 Support
 -  Laravel Scout 9 Support
+
+## [4.0.10] - 2021-08-01
+### Fixed
+-  Avoid ambiguous In Some Cases
+
+## [4.0.9] - 2021-07-29
+### Fixed
+-  Avoid Conflict Helper Function `resolve()` In Some Packages
+
+## [4.0.8] - 2021-07-23
+### Added
+-  whereIn filter support
+
+## [4.0.7] - 2021-04-21
+Support Scout 9
+## [4.0.6] - 2021-04-21
+### Fixed
+-  Hot fix for https://github.com/matchish/laravel-scout-elasticsearch/issues/160
+
 ## [4.0.5] - 2021-01-05
 ### Fixed
 -  Find searchable classes when inherited through traits
@@ -92,7 +136,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - ScoutElasticSearchService don't config elasticsearch client anymore
 
 ### Fixed
-- Empty elasticsearch host when config is cached 
+- Empty elasticsearch host when config is cached
 
 ### Added
 - Default config
