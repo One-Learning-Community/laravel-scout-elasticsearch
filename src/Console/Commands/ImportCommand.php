@@ -18,7 +18,10 @@ final class ImportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected $signature = 'scout:import {searchable?* : The name of the searchable}';
+    protected $signature = 'scout:import
+        {searchable?* : The name of the searchable}
+        {--queue}
+    ';
     /**
      * {@inheritdoc}
      */
@@ -29,10 +32,10 @@ final class ImportCommand extends Command
      */
     public function handle(): void
     {
-        $this->searchableList((array) $this->argument('searchable'))
-        ->each(function ($searchable) {
-            $this->import($searchable);
-        });
+        $this->searchableList((array)$this->argument('searchable'))
+            ->each(function ($searchable) {
+                $this->import($searchable);
+            });
     }
 
     private function searchableList(array $argument): Collection
@@ -51,7 +54,7 @@ final class ImportCommand extends Command
         $job = new Import($source);
         $job->timeout = Config::queueTimeout();
 
-        if (config('scout.queue')) {
+        if ($this->option('queue')) {
             $job = (new QueueableJob())->chain([$job]);
             $job->timeout = Config::queueTimeout();
         }
