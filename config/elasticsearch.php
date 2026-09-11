@@ -17,6 +17,12 @@ return [
      * implementing ElasticSearch\RawQuery to bypass escaping when this is on.
      */
     'escape_query' => env('ELASTICSEARCH_ESCAPE_QUERY', false),
+    /*
+     * Extra parameters for the query_string clause built from Model::search(),
+     * e.g. ['default_operator' => 'AND', 'fields' => ['title^2', 'body']].
+     * Empty means Elasticsearch's defaults: OR, every field.
+     */
+    'query_string' => [],
     'queue' => [
         'timeout' => env('SCOUT_QUEUE_TIMEOUT'),
     ],

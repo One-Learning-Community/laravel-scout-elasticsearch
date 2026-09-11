@@ -30,11 +30,11 @@ final class SearchFactory
             $boolQuery = static::addWhereIns($builder, $boolQuery);
             $boolQuery = static::addWhereNotIns($builder, $boolQuery);
             if (! empty($query)) {
-                $boolQuery->add(new QueryStringQuery($query));
+                $boolQuery->add(new QueryStringQuery($query, static::queryStringParameters()));
             }
             $search->addQuery($boolQuery);
         } elseif (! empty($query)) {
-            $search->addQuery(new QueryStringQuery($query));
+            $search->addQuery(new QueryStringQuery($query, static::queryStringParameters()));
         }
         if (array_key_exists('from', $options)) {
             $search->setFrom($options['from']);
@@ -73,6 +73,18 @@ final class SearchFactory
         $query = (string) $query;
 
         return config('elasticsearch.escape_query', false) ? QueryStringEscaper::escape($query) : $query;
+    }
+
+    /**
+     * Extra query_string parameters from `elasticsearch.query_string`, e.g.
+     * `['default_operator' => 'AND', 'fields' => ['title^2', 'body']]`. Empty
+     * by default, which is Elasticsearch's own default (OR over every field).
+     *
+     * @return array<string, mixed>
+     */
+    private static function queryStringParameters(): array
+    {
+        return (array) config('elasticsearch.query_string', []);
     }
 
     /**

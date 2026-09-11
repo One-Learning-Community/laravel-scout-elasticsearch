@@ -36,6 +36,23 @@ class SearchFactoryEscapeTest extends TestCase
         $this->assertSame('letter \\"i', $this->queryString(new Builder(new Product(), 'letter "i')));
     }
 
+    public function test_query_string_parameters_come_from_config(): void
+    {
+        $this->app['config']->set('elasticsearch.query_string', ['default_operator' => 'AND', 'fields' => ['title^2']]);
+
+        $clause = SearchFactory::create(new Builder(new Product(), 'allen kim'))->toArray()['query']['query_string'];
+
+        $this->assertSame('AND', $clause['default_operator']);
+        $this->assertSame(['title^2'], $clause['fields']);
+    }
+
+    public function test_no_query_string_parameters_by_default(): void
+    {
+        $this->app['config']->set('elasticsearch.query_string', []);
+
+        $this->assertSame(['query' => 'allen kim'], SearchFactory::create(new Builder(new Product(), 'allen kim'))->toArray()['query']['query_string']);
+    }
+
     public function test_raw_query_is_never_escaped(): void
     {
         $this->app['config']->set('elasticsearch.escape_query', true);

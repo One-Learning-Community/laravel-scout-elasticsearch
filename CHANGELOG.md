@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ## [Unreleased]
 ### Added
 - `elasticsearch.escape_query` (default `false`): when on, the string passed to `Model::search()` has Lucene reserved characters escaped before it becomes a `query_string`, so a stray `"` is a term rather than a parse error. Wrap a query in a class implementing `ElasticSearch\RawQuery` to bypass it. `ElasticSearch\QueryStringEscaper` is the escaper.
+- `elasticsearch.query_string` (default `[]`): extra parameters merged into the `query_string` clause built from `Model::search()`, e.g. `['default_operator' => 'AND', 'fields' => ['title^2']]` (the ask in #86).
 
 ## [7.12.0] - 2025-08-26
 ### Changed
