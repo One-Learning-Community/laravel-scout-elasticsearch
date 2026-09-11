@@ -10,6 +10,13 @@ return [
     'cloud_id' => env('ELASTICSEARCH_CLOUD_ID', env('ELASTICSEARCH_API_ID')),
     'api_key' => env('ELASTICSEARCH_API_KEY'),
     'ssl_verification' => env('ELASTICSEARCH_SSL_VERIFICATION', true),
+    /*
+     * Escape Lucene reserved characters in the string passed to Model::search()
+     * before it becomes a query_string. Off, the string is the query_string
+     * syntax itself (a stray `"` is a parse error). Wrap a query in a class
+     * implementing ElasticSearch\RawQuery to bypass escaping when this is on.
+     */
+    'escape_query' => env('ELASTICSEARCH_ESCAPE_QUERY', false),
     'queue' => [
         'timeout' => env('SCOUT_QUEUE_TIMEOUT'),
     ],

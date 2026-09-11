@@ -22,18 +22,19 @@ final class SearchFactory
     public static function create(Builder $builder, array $enforceOptions = []): Search
     {
         $options = static::prepareOptions($builder, $enforceOptions);
+        $query = static::query($builder);
         $search = new Search();
         if (static::hasWhereFilters($builder)) {
             $boolQuery = new BoolQuery();
             $boolQuery = static::addWheres($builder, $boolQuery);
             $boolQuery = static::addWhereIns($builder, $boolQuery);
             $boolQuery = static::addWhereNotIns($builder, $boolQuery);
-            if (! empty($builder->query)) {
-                $boolQuery->add(new QueryStringQuery($builder->query));
+            if (! empty($query)) {
+                $boolQuery->add(new QueryStringQuery($query));
             }
             $search->addQuery($boolQuery);
-        } elseif (! empty($builder->query)) {
-            $search->addQuery(new QueryStringQuery($builder->query));
+        } elseif (! empty($query)) {
+            $search->addQuery(new QueryStringQuery($query));
         }
         if (array_key_exists('from', $options)) {
             $search->setFrom($options['from']);
@@ -51,6 +52,27 @@ final class SearchFactory
         }
 
         return $search;
+    }
+
+    /**
+     * The query_string text for this builder. Verbatim by default (the
+     * upstream contract: callers may write Lucene syntax); escaped when
+     * `elasticsearch.escape_query` is on, unless the query is a RawQuery.
+     *
+     * @param  Builder  $builder
+     * @return string
+     */
+    private static function query($builder): string
+    {
+        $query = $builder->query;
+
+        if ($query instanceof RawQuery) {
+            return (string) $query;
+        }
+
+        $query = (string) $query;
+
+        return config('elasticsearch.escape_query', false) ? QueryStringEscaper::escape($query) : $query;
     }
 
     /**
