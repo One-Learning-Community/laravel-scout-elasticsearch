@@ -32,7 +32,15 @@ class QueryStringEscaperTest extends TestCase
             'lowercase operators are already words' => ['cats and dogs', 'cats and dogs'],
             'angle brackets cannot be escaped, so they go' => ['i <3 math', 'i 3 math'],
             'a lone star is the match-all convention' => ['*', '*'],
-            'a star inside a term is left live (P2 of the audit)' => ['*pre-k*', '*pre\\-k*'],
+            'a run of bare stars is also the match-all convention' => ['**', '**'],
+            // security-audit 04-04: a star embedded in anything else is now escaped —
+            // unescaped it is a Lucene wildcard operator, and a leading '*' forces an
+            // expensive backward index scan (wildcard-injection DoS). No production
+            // caller depends on a live embedded '*' through this plain-string path any
+            // more (TermClause/WildcardFilter callers escape their own '*' before
+            // building a structured wildcard clause).
+            'a star inside a term is escaped (04-04 P0 follow-up)' => ['*pre-k*', '\\*pre\\-k\\*'],
+            'a leading star is escaped' => ['*etc/passwd', '\\*etc\\/passwd'],
             'empty' => ['', ''],
             'plain words untouched' => ['the water cycle', 'the water cycle'],
         ];
